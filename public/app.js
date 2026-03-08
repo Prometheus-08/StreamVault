@@ -340,8 +340,13 @@ async function fetchMusic(q, next, grid, status, wrapId, append=false){
 
 function playMusicById(id, title, channel, thumb){
   closeMuOverlay();
-  hide();
-  // Show now playing bar
+  // Stop any existing playback cleanly
+  vid.pause(); vid.src='';
+  ytf.src=''; ytf.style.display='none';
+  ytf.style.opacity=''; ytf.style.pointerEvents='';
+  vph.style.display='none';
+
+  // Show music player screen
   const np = document.getElementById('nowPlaying');
   if(np){
     np.style.display = 'flex';
@@ -349,10 +354,14 @@ function playMusicById(id, title, channel, thumb){
     document.getElementById('npTitle').textContent = title;
     document.getElementById('npChannel').textContent = channel;
   }
-  // Load YouTube embed hidden (audio only)
+
+  // Show iframe but visually replaced by now-playing bar
   ytf.style.display = 'block';
   ytf.style.opacity = '0';
+  ytf.style.position = 'absolute';
   ytf.style.pointerEvents = 'none';
+  ytf.style.width = '1px';
+  ytf.style.height = '1px';
   ytf.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
   mode = 'music'; playing = true; setPb(true);
   sys(`🎵 NOW PLAYING: ${title}`);
@@ -385,7 +394,18 @@ function stopScreen(){
   mode=null; playing=false; setPb(false); sys('🖥 SCREEN SHARE ENDED');
 }
 function closeDrawer(){ drawerOpen=false; document.getElementById('srcDrw').classList.remove('open'); document.getElementById('insBtn').classList.remove('active'); }
-function hide(){ vph.style.display='none'; vid.style.display='none'; ytf.style.display='none'; ytf.src=''; }
+function hide(){
+  vph.style.display='none';
+  vid.style.display='none';
+  ytf.style.display='none';
+  ytf.style.opacity='';
+  ytf.style.pointerEvents='';
+  ytf.src='';
+  // hide now playing bar and reset music mode
+  const np = document.getElementById('nowPlaying');
+  if(np) np.style.display='none';
+  if(mode==='music') mode=null;
+}
 function bindVid(){
   vid.ontimeupdate=upd;
   vid.onended=()=>{ playing=false; setPb(false); sys('⏹ PLAYBACK ENDED'); };
@@ -398,7 +418,18 @@ function upd(){
 function ft(s){ if(!s||isNaN(s)) return'00:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
 function setPb(p){ const b=document.getElementById('pb'); b.textContent=p?'⏸ PAUSE':'▶ PLAY'; b.classList.toggle('playing',p); }
 function togglePlay(){
-  if(mode==='yt' || mode==='music'){ sys('ℹ USE YOUTUBE PLAYER CONTROLS'); return; }
+  if(mode==='music'){
+    // Stop music completely
+    ytf.src=''; ytf.style.display='none';
+    ytf.style.opacity=''; ytf.style.pointerEvents='';
+    ytf.style.width=''; ytf.style.height=''; ytf.style.position='';
+    const np=document.getElementById('nowPlaying'); if(np) np.style.display='none';
+    mode=null; playing=false; setPb(false);
+    vph.style.display='flex';
+    sys('⏹ MUSIC STOPPED');
+    return;
+  }
+  if(mode==='yt'){ sys('ℹ USE YOUTUBE PLAYER CONTROLS'); return; }
   if(!mode){ sys('⚠ CLICK ⏏ INSERT TAPE FIRST'); return; }
   if(playing){
     vid.pause(); playing=false; setPb(false);

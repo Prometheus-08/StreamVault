@@ -573,6 +573,12 @@ svg.filters{position:absolute;width:0;height:0;}
 }
 .yt-overlay-grid::-webkit-scrollbar{width:4px;}
 .yt-overlay-grid::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:2px;}
+.load-more-wrap{
+  flex-shrink:0;text-align:center;
+  padding:10px 0 12px;
+  border-top:1px solid var(--brd);
+  background:#06061a;
+}
 .yt-card{
   background:#0a0a22;border:1px solid var(--brd);border-radius:6px;
   overflow:hidden;cursor:pointer;transition:all 0.2s;
@@ -656,7 +662,6 @@ svg.filters{position:absolute;width:0;height:0;}
 }
 @keyframes npg{0%,100%{opacity:0.7}50%{opacity:1;}}
 
-.load-more-wrap{text-align:center;padding:10px 0 5px;}
 .load-more-btn{
   font-family:'VT323',monospace;font-size:0.8rem;letter-spacing:2px;
   padding:6px 24px;border-radius:3px;cursor:pointer;
