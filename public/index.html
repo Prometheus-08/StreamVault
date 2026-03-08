@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamVault</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Socket.IO — served by your Node server -->
+<script>
+(function(){
+  const s = document.createElement('script');
+  s.src = '/socket.io/socket.io.js';
+  s.onerror = () => console.warn('Socket.IO not available — local mode');
+  document.head.appendChild(s);
+})();
+</script>
+</head>
+
+<body>
+
+<!-- SVG filter for screen curve -->
+<svg class="filters" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="curve">
+      <feTurbulence type="turbulence" baseFrequency="0.015 0.015" numOctaves="1" result="noise" seed="2"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ══ WELCOME SCREEN ══ -->
+<div id="welcome">
+
+  <div class="nsign ns1">
+    <span class="ns-icon">🍕</span>
+    <span class="ns-text">PIZZA PALACE</span>
+    <div class="ns-flicker-bar"></div>
+  </div>
+  <div class="nsign ns2">
+    <span class="ns-icon">⚡</span>
+    <span class="ns-text">OPEN 24/7</span>
+    <div class="ns-flicker-bar"></div>
+  </div>
+  <div class="nsign ns3">
+    <span class="ns-icon">🍺</span>
+    <span class="ns-text">NEON BAR</span>
+    <div class="ns-flicker-bar"></div>
+  </div>
+  <div class="nsign ns4">
+    <span class="ns-icon">📼</span>
+    <span class="ns-text">VIDEO CLUB</span>
+    <div class="ns-flicker-bar"></div>
+  </div>
+
+  <!-- City scene -->
+  <div class="city-wrap">
+    <svg width="100%" height="100%" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cg1" cx="22%" cy="100%" r="45%"><stop offset="0%" stop-color="#3b1f8a" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <radialGradient id="cg2" cx="78%" cy="100%" r="40%"><stop offset="0%" stop-color="#1a3f8a" stop-opacity="0.45"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <filter id="wg"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="lglow"><feGaussianBlur stdDeviation="3"/></filter>
+      </defs>
+      <rect width="1440" height="420" fill="url(#cg1)"/>
+      <rect width="1440" height="420" fill="url(#cg2)"/>
+      <!-- Buildings -->
+      <rect x="0"    y="255" width="85"  height="165" fill="#040415" rx="1"/>
+      <rect x="90"   y="290" width="60"  height="130" fill="#030312" rx="1"/>
+      <rect x="155"  y="205" width="105" height="215" fill="#050520" rx="1"/>
+      <rect x="265"  y="235" width="75"  height="185" fill="#040418" rx="1"/>
+      <rect x="345"  y="175" width="125" height="245" fill="#060625" rx="1"/>
+      <rect x="475"  y="245" width="58"  height="175" fill="#040415" rx="1"/>
+      <rect x="538"  y="195" width="92"  height="225" fill="#05051e" rx="1"/>
+      <rect x="635"  y="145" width="145" height="275" fill="#070730" rx="1"/>
+      <rect x="785"  y="205" width="80"  height="215" fill="#040418" rx="1"/>
+      <rect x="870"  y="165" width="110" height="255" fill="#060628" rx="1"/>
+      <rect x="985"  y="215" width="65"  height="205" fill="#040415" rx="1"/>
+      <rect x="1055" y="180" width="100" height="240" fill="#050522" rx="1"/>
+      <rect x="1160" y="220" width="68"  height="200" fill="#040418" rx="1"/>
+      <rect x="1233" y="185" width="98"  height="235" fill="#050520" rx="1"/>
+      <rect x="1336" y="225" width="75"  height="195" fill="#040415" rx="1"/>
+      <rect x="1415" y="190" width="25"  height="230" fill="#030312" rx="1"/>
+      <rect x="0"    y="305" width="72"  height="115" fill="#090930" rx="1"/>
+      <rect x="1368" y="310" width="72"  height="110" fill="#090930" rx="1"/>
+      <!-- Windows -->
+      <g filter="url(#wg)">
+        <rect x="163" y="220" width="9" height="7" fill="#fbbf24" opacity="0.80" rx="1"/>
+        <rect x="178" y="220" width="9" height="7" fill="#c084fc" opacity="0.70" rx="1"/>
+        <rect x="193" y="220" width="9" height="7" fill="#fbbf24" opacity="0.55" rx="1"/>
+        <rect x="208" y="220" width="9" height="7" fill="#93c5fd" opacity="0.65" rx="1"/>
+        <rect x="163" y="237" width="9" height="7" fill="#93c5fd" opacity="0.60" rx="1"/>
+        <rect x="178" y="237" width="9" height="7" fill="#fbbf24" opacity="0.75" rx="1"/>
+        <rect x="208" y="237" width="9" height="7" fill="#c084fc" opacity="0.50" rx="1"/>
+        <rect x="163" y="254" width="9" height="7" fill="#c084fc" opacity="0.45" rx="1"/>
+        <rect x="193" y="254" width="9" height="7" fill="#fbbf24" opacity="0.60" rx="1"/>
+        <rect x="178" y="254" width="9" height="7" fill="#93c5fd" opacity="0.40" rx="1"/>
+        <rect x="163" y="271" width="9" height="7" fill="#fbbf24" opacity="0.50" rx="1"/>
+        <rect x="208" y="271" width="9" height="7" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="355" y="188" width="11" height="8" fill="#fbbf24" opacity="0.78" rx="1"/>
+        <rect x="373" y="188" width="11" height="8" fill="#fbbf24" opacity="0.55" rx="1"/>
+        <rect x="391" y="188" width="11" height="8" fill="#93c5fd" opacity="0.65" rx="1"/>
+        <rect x="409" y="188" width="11" height="8" fill="#c084fc" opacity="0.72" rx="1"/>
+        <rect x="427" y="188" width="11" height="8" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="445" y="188" width="11" height="8" fill="#4ade80" opacity="0.50" rx="1"/>
+        <rect x="355" y="206" width="11" height="8" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="391" y="206" width="11" height="8" fill="#fbbf24" opacity="0.65" rx="1"/>
+        <rect x="409" y="206" width="11" height="8" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="445" y="206" width="11" height="8" fill="#93c5fd" opacity="0.60" rx="1"/>
+        <rect x="355" y="224" width="11" height="8" fill="#93c5fd" opacity="0.65" rx="1"/>
+        <rect x="373" y="224" width="11" height="8" fill="#fbbf24" opacity="0.72" rx="1"/>
+        <rect x="427" y="224" width="11" height="8" fill="#c084fc" opacity="0.50" rx="1"/>
+        <rect x="355" y="242" width="11" height="8" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="409" y="242" width="11" height="8" fill="#fbbf24" opacity="0.58" rx="1"/>
+        <rect x="445" y="242" width="11" height="8" fill="#c084fc" opacity="0.48" rx="1"/>
+        <rect x="645" y="158" width="13" height="9" fill="#c084fc" opacity="0.80" rx="1"/>
+        <rect x="664" y="158" width="13" height="9" fill="#fbbf24" opacity="0.65" rx="1"/>
+        <rect x="683" y="158" width="13" height="9" fill="#93c5fd" opacity="0.70" rx="1"/>
+        <rect x="702" y="158" width="13" height="9" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="721" y="158" width="13" height="9" fill="#fbbf24" opacity="0.75" rx="1"/>
+        <rect x="740" y="158" width="13" height="9" fill="#4ade80" opacity="0.45" rx="1"/>
+        <rect x="759" y="158" width="13" height="9" fill="#fbbf24" opacity="0.60" rx="1"/>
+        <rect x="645" y="178" width="13" height="9" fill="#fbbf24" opacity="0.55" rx="1"/>
+        <rect x="683" y="178" width="13" height="9" fill="#c084fc" opacity="0.70" rx="1"/>
+        <rect x="702" y="178" width="13" height="9" fill="#fbbf24" opacity="0.58" rx="1"/>
+        <rect x="740" y="178" width="13" height="9" fill="#93c5fd" opacity="0.65" rx="1"/>
+        <rect x="759" y="178" width="13" height="9" fill="#c084fc" opacity="0.50" rx="1"/>
+        <rect x="645" y="198" width="13" height="9" fill="#93c5fd" opacity="0.45" rx="1"/>
+        <rect x="664" y="198" width="13" height="9" fill="#fbbf24" opacity="0.72" rx="1"/>
+        <rect x="702" y="198" width="13" height="9" fill="#c084fc" opacity="0.58" rx="1"/>
+        <rect x="721" y="198" width="13" height="9" fill="#fbbf24" opacity="0.65" rx="1"/>
+        <rect x="759" y="198" width="13" height="9" fill="#93c5fd" opacity="0.55" rx="1"/>
+        <rect x="645" y="218" width="13" height="9" fill="#fbbf24" opacity="0.60" rx="1"/>
+        <rect x="683" y="218" width="13" height="9" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="740" y="218" width="13" height="9" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="645" y="238" width="13" height="9" fill="#c084fc" opacity="0.42" rx="1"/>
+        <rect x="664" y="238" width="13" height="9" fill="#fbbf24" opacity="0.65" rx="1"/>
+        <rect x="702" y="238" width="13" height="9" fill="#93c5fd" opacity="0.52" rx="1"/>
+        <rect x="880" y="178" width="11" height="8" fill="#fbbf24" opacity="0.72" rx="1"/>
+        <rect x="897" y="178" width="11" height="8" fill="#c084fc" opacity="0.60" rx="1"/>
+        <rect x="914" y="178" width="11" height="8" fill="#fbbf24" opacity="0.75" rx="1"/>
+        <rect x="931" y="178" width="11" height="8" fill="#93c5fd" opacity="0.55" rx="1"/>
+        <rect x="948" y="178" width="11" height="8" fill="#c084fc" opacity="0.65" rx="1"/>
+        <rect x="965" y="178" width="11" height="8" fill="#fbbf24" opacity="0.50" rx="1"/>
+        <rect x="880" y="196" width="11" height="8" fill="#93c5fd" opacity="0.55" rx="1"/>
+        <rect x="914" y="196" width="11" height="8" fill="#fbbf24" opacity="0.68" rx="1"/>
+        <rect x="948" y="196" width="11" height="8" fill="#c084fc" opacity="0.48" rx="1"/>
+        <rect x="880" y="214" width="11" height="8" fill="#fbbf24" opacity="0.60" rx="1"/>
+        <rect x="897" y="214" width="11" height="8" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="931" y="214" width="11" height="8" fill="#93c5fd" opacity="0.60" rx="1"/>
+        <rect x="965" y="214" width="11" height="8" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="880" y="232" width="11" height="8" fill="#c084fc" opacity="0.42" rx="1"/>
+        <rect x="914" y="232" width="11" height="8" fill="#fbbf24" opacity="0.58" rx="1"/>
+        <rect x="948" y="232" width="11" height="8" fill="#fbbf24" opacity="0.50" rx="1"/>
+        <rect x="1063" y="192" width="10" height="7" fill="#fbbf24" opacity="0.70" rx="1"/>
+        <rect x="1079" y="192" width="10" height="7" fill="#c084fc" opacity="0.58" rx="1"/>
+        <rect x="1095" y="192" width="10" height="7" fill="#fbbf24" opacity="0.72" rx="1"/>
+        <rect x="1111" y="192" width="10" height="7" fill="#93c5fd" opacity="0.62" rx="1"/>
+        <rect x="1127" y="192" width="10" height="7" fill="#fbbf24" opacity="0.50" rx="1"/>
+        <rect x="1143" y="192" width="10" height="7" fill="#c084fc" opacity="0.65" rx="1"/>
+        <rect x="1063" y="209" width="10" height="7" fill="#c084fc" opacity="0.48" rx="1"/>
+        <rect x="1095" y="209" width="10" height="7" fill="#fbbf24" opacity="0.65" rx="1"/>
+        <rect x="1127" y="209" width="10" height="7" fill="#93c5fd" opacity="0.55" rx="1"/>
+        <rect x="1063" y="226" width="10" height="7" fill="#fbbf24" opacity="0.58" rx="1"/>
+        <rect x="1079" y="226" width="10" height="7" fill="#fbbf24" opacity="0.42" rx="1"/>
+        <rect x="1111" y="226" width="10" height="7" fill="#c084fc" opacity="0.60" rx="1"/>
+        <rect x="1143" y="226" width="10" height="7" fill="#fbbf24" opacity="0.50" rx="1"/>
+        <rect x="1063" y="243" width="10" height="7" fill="#93c5fd" opacity="0.45" rx="1"/>
+        <rect x="1095" y="243" width="10" height="7" fill="#fbbf24" opacity="0.62" rx="1"/>
+        <rect x="1127" y="243" width="10" height="7" fill="#c084fc" opacity="0.48" rx="1"/>
+        <rect x="1241" y="198" width="10" height="7" fill="#fbbf24" opacity="0.68" rx="1"/>
+        <rect x="1257" y="198" width="10" height="7" fill="#c084fc" opacity="0.72" rx="1"/>
+        <rect x="1273" y="198" width="10" height="7" fill="#fbbf24" opacity="0.52" rx="1"/>
+        <rect x="1289" y="198" width="10" height="7" fill="#93c5fd" opacity="0.58" rx="1"/>
+        <rect x="1305" y="198" width="10" height="7" fill="#c084fc" opacity="0.50" rx="1"/>
+        <rect x="1241" y="215" width="10" height="7" fill="#93c5fd" opacity="0.55" rx="1"/>
+        <rect x="1273" y="215" width="10" height="7" fill="#fbbf24" opacity="0.68" rx="1"/>
+        <rect x="1305" y="215" width="10" height="7" fill="#fbbf24" opacity="0.45" rx="1"/>
+        <rect x="1241" y="232" width="10" height="7" fill="#c084fc" opacity="0.48" rx="1"/>
+        <rect x="1257" y="232" width="10" height="7" fill="#fbbf24" opacity="0.60" rx="1"/>
+        <rect x="1289" y="232" width="10" height="7" fill="#c084fc" opacity="0.55" rx="1"/>
+        <rect x="1241" y="249" width="10" height="7" fill="#fbbf24" opacity="0.42" rx="1"/>
+        <rect x="1273" y="249" width="10" height="7" fill="#93c5fd" opacity="0.58" rx="1"/>
+        <rect x="1305" y="249" width="10" height="7" fill="#fbbf24" opacity="0.50" rx="1"/>
+      </g>
+      <!-- Street lamp glows -->
+      <ellipse cx="180"  cy="393" rx="55" ry="7" fill="rgba(255,215,80,0.12)" filter="url(#lglow)"/>
+      <ellipse cx="500"  cy="393" rx="55" ry="7" fill="rgba(255,215,80,0.10)" filter="url(#lglow)"/>
+      <ellipse cx="960"  cy="393" rx="55" ry="7" fill="rgba(255,215,80,0.12)" filter="url(#lglow)"/>
+      <ellipse cx="1260" cy="393" rx="55" ry="7" fill="rgba(255,215,80,0.10)" filter="url(#lglow)"/>
+      <!-- Street -->
+      <rect x="0" y="393" width="1440" height="27" fill="#020210"/>
+      <ellipse cx="720" cy="400" rx="720" ry="10" fill="rgba(70,35,190,0.20)"/>
+      <line x1="0" y1="395" x2="1440" y2="395" stroke="rgba(70,50,160,0.20)" stroke-width="1"/>
+      <rect x="90"   y="396" width="5" height="2" fill="rgba(255,100,150,0.22)" rx="1"/>
+      <rect x="310"  y="397" width="5" height="2" fill="rgba(100,140,255,0.22)" rx="1"/>
+      <rect x="580"  y="396" width="5" height="2" fill="rgba(180,100,255,0.22)" rx="1"/>
+      <rect x="870"  y="397" width="5" height="2" fill="rgba(255,180,50,0.18)"  rx="1"/>
+      <rect x="1120" y="396" width="5" height="2" fill="rgba(100,200,255,0.18)" rx="1"/>
+      <rect x="1380" y="397" width="5" height="2" fill="rgba(255,100,150,0.18)" rx="1"/>
+    </svg>
+    <!-- Lamp posts -->
+    <div class="lamp" style="left:12%;"><div class="lamp-arm"></div><div class="lamp-head"></div><div class="lamp-post"></div><div class="lamp-glow-cone"></div></div>
+    <div class="lamp" style="left:34%;"><div class="lamp-arm"></div><div class="lamp-head"></div><div class="lamp-post"></div><div class="lamp-glow-cone"></div></div>
+    <div class="lamp" style="left:66%;"><div class="lamp-arm"></div><div class="lamp-head"></div><div class="lamp-post"></div><div class="lamp-glow-cone"></div></div>
+    <div class="lamp" style="left:87%;"><div class="lamp-arm"></div><div class="lamp-head"></div><div class="lamp-post"></div><div class="lamp-glow-cone"></div></div>
+    <!-- Car lane -->
+    <div id="carLane" style="position:absolute;bottom:0;left:0;right:0;height:22px;overflow:hidden;"></div>
+  </div>
+
+  <!-- TV -->
+  <div id="tv-wrap">
+    <div class="tv-antenna">
+      <div class="ant ant-l"></div>
+      <div class="ant-ball"></div>
+      <div class="ant ant-r"></div>
+    </div>
+    <div class="tv-case">
+      <div class="tv-bezel">
+        <div class="tv-screen">
+          <div class="screen-glow"></div>
+          <div class="screen-streaks">
+            <div class="streak s1"></div>
+            <div class="streak s2"></div>
+            <div class="streak s3"></div>
+          </div>
+          <div class="screen-inner">
+            <div class="sv-logo">StreamVault</div>
+            <div class="club-badge">✦ PRIVATE CLUB ✦</div>
+            <div class="screen-label">ENTER YOUR HANDLE</div>
+            <input class="screen-input" id="wName" type="text" placeholder="YOUR_NAME" maxlength="14" onkeydown="if(event.key==='Enter')document.getElementById('wPass').focus()">
+            <div class="screen-label" style="margin-top:4px">ENTER PASSWORD</div>
+            <input class="screen-input" id="wPass" type="password" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')enterVault()">
+            <div id="wErr" style="font-family:'VT323',monospace;font-size:0.68rem;letter-spacing:2px;color:#f87171;min-height:14px;text-align:center;"></div>
+            <button class="continue-btn" onclick="enterVault()">▶ CONTINUE</button>
+          </div>
+          <div class="insert-bar">
+            <span class="ins-txt">INSERT TAPE TO BEGIN</span>
+            <div class="ins-slot"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tv-controls-row">
+        <div class="tv-speaker-grille">
+          <div class="tv-speaker-dot"></div><div class="tv-speaker-dot"></div>
+          <div class="tv-speaker-dot"></div><div class="tv-speaker-dot"></div>
+        </div>
+        <div class="tv-power on"></div>
+        <div class="tv-knob"></div>
+        <div class="tv-knob"></div>
+        <div class="tv-speaker-grille">
+          <div class="tv-speaker-dot"></div><div class="tv-speaker-dot"></div>
+          <div class="tv-speaker-dot"></div><div class="tv-speaker-dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tv-legs-wrap">
+      <div class="tv-leg tv-leg-l"></div>
+      <div class="tv-leg tv-leg-r"></div>
+    </div>
+    <div class="tv-floor-glow"></div>
+  </div>
+
+</div>
+
+<!-- Flash transition overlay -->
+<div id="zoomOv"></div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="mainApp">
+  <div class="mhdr">
+    <div class="mlogo">StreamVault<small>// PRIVATE CLUB</small></div>
+    <div class="hdr-mid">
+      <div class="room-tag" onclick="copyRoom()">ROOM #<span id="rc">SV-????</span></div>
+      <div class="user-tag" id="utag">USER: ---</div>
+    </div>
+    <div class="hdr-r">
+      <div class="odot"></div>
+      <span class="ocnt" id="onlineCnt">1 ONLINE</span>
+      <button class="fs-btn" id="fsBtn" onclick="toggleFS()">⛶ CINEMA</button>
+    </div>
+  </div>
+
+  <div class="mlayout">
+    <div class="mleft">
+      <!-- Tape bar -->
+      <div class="tape-bar">
+        <button class="ins-btn" id="insBtn" onclick="toggleDrawer()">⏏ INSERT TAPE</button>
+        <span class="tspc"></span>
+        <span class="pcnt" id="pcnt">PAUSES: <strong>2</strong></span>
+        <button class="req-btn rp-btn" onclick="openReqPause()">⏸ REQ PAUSE</button>
+        <button class="req-btn rc-btn" onclick="openReqChange()">⇄ REQ CHANGE</button>
+      </div>
+
+      <!-- Source drawer -->
+      <div class="src-drawer" id="srcDrw">
+        <div class="stabs">
+          <button class="stab on" onclick="showStab('yt',this)"><span class="si">▶</span>YOUTUBE</button>
+          <button class="stab" onclick="showStab('file',this)"><span class="si">📁</span>UPLOAD</button>
+          <button class="stab" onclick="showStab('music',this)"><span class="si">🎵</span>MUSIC</button>
+          <button class="stab" onclick="showStab('screen',this)"><span class="si">🖥</span>SCREEN</button>
+          <button class="stab" onclick="showStab('lib',this)"><span class="si">🗄</span>LIBRARY</button>
+        </div>
+        <div class="spnls">
+          <div class="spnl on" id="sp-yt">
+            <div class="srow">
+              <input class="sinp" id="ytUrl" type="url" placeholder="Paste YouTube video URL...">
+              <button class="pbtn" onclick="loadYT()">LOAD ▸</button>
+            </div>
+            <div class="fnote">⚠ YouTube may restrict embedding.</div>
+          </div>
+          <div class="spnl" id="sp-file">
+            <div class="fdrop" id="fd" onclick="document.getElementById('fi').click()">
+              <input type="file" id="fi" accept="video/*" onchange="loadFile(event)">
+              <div>📂 DROP VIDEO FILE OR CLICK TO BROWSE</div>
+              <div style="font-size:0.6rem;margin-top:3px;opacity:0.5">MP4 · MKV · WEBM · MOV</div>
+            </div>
+          </div>
+          <div class="spnl" id="sp-music">
+            <div class="srow">
+              <input class="sinp" id="muUrl" type="url" placeholder="YouTube URL (audio) or stream link...">
+              <button class="pbtn" onclick="loadMusicUrl()">PLAY ▸</button>
+            </div>
+            <div class="srow">
+              <input class="sinp" id="muFn" type="text" placeholder="Upload audio file..." readonly style="cursor:pointer" onclick="document.getElementById('ai').click()">
+              <input type="file" id="ai" accept="audio/*" onchange="loadAudio(event)" style="display:none">
+              <button class="pbtn" onclick="document.getElementById('ai').click()">BROWSE</button>
+            </div>
+          </div>
+          <div class="spnl" id="sp-screen">
+            <div class="srow">
+              <button class="pbtn" onclick="startScreen()">🖥 START SCREEN SHARE</button>
+              <button class="pbtn red" id="stopBtn" onclick="stopScreen()" style="display:none">⏹ STOP</button>
+              <span style="font-family:'VT323',monospace;font-size:0.7rem;color:var(--muted)" id="scrSt">IDLE</span>
+            </div>
+            <div class="fnote">Browser will ask for permission.</div>
+          </div>
+          <div class="spnl" id="sp-lib">
+            <div style="font-family:'VT323',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:1px;margin-bottom:7px">SERVER LIBRARY <span style="display:inline-block;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);color:var(--gold);padding:1px 7px;font-size:0.5rem;border-radius:2px;margin-left:5px">CONNECT SERVER</span></div>
+            <div class="libg" id="lg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video area -->
+      <div class="varea">
+        <div class="vph" id="vph">
+          <div class="vbig">STREAMVAULT</div>
+          <div class="vhint">CLICK ⏏ INSERT TAPE TO LOAD</div>
+        </div>
+        <video id="mainVid" style="display:none"></video>
+        <iframe id="ytFrame" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+
+      <!-- Playback controls -->
+      <div class="ctrl">
+        <button class="cb" id="pb" onclick="togglePlay()">▶ PLAY</button>
+        <button class="cb" onclick="rew()">⟨⟨ -10s</button>
+        <div class="prog" id="pw" onclick="seek(event)"><div id="pf"></div></div>
+        <span class="tc" id="tc">00:00 / 00:00</span>
+        <div class="vgrp"><span class="vlbl">VOL</span><input type="range" id="vs" min="0" max="1" step="0.05" value="0.8" oninput="setVol(this.value)"></div>
+      </div>
+    </div>
+
+    <!-- Chat panel -->
+    <div class="mright">
+      <div class="chdr">
+        <span class="ctitle">// CHAT</span>
+        <span style="font-family:'VT323',monospace;font-size:0.65rem;color:var(--muted)" id="crsub">ROOM ---</span>
+      </div>
+      <div class="cmsgs" id="msgs"></div>
+      <div class="reacts">
+        <button class="rb" onclick="react('😂')">😂</button>
+        <button class="rb" onclick="react('🔥')">🔥</button>
+        <button class="rb" onclick="react('😮')">😮</button>
+        <button class="rb" onclick="react('❤️')">❤️</button>
+        <button class="rb" onclick="react('👏')">👏</button>
+        <button class="rb" onclick="react('🎬')">🎬</button>
+        <button class="rb" onclick="react('💀')">💀</button>
+      </div>
+      <div class="chat-input-rel">
+        <div class="gif-picker" id="gifPicker">
+          <div class="gif-search-wrap">
+            <div class="gif-search-inner">
+              <span class="gif-search-icon">🔍</span>
+              <input type="text" id="gifSearch" placeholder="Search GIFs..." oninput="searchGifs(this.value)">
+            </div>
+          </div>
+          <div class="gif-cats" id="gifCats">
+            <button class="gif-cat active" onclick="setGifCat('trending',this)">🔥 TRENDING</button>
+            <button class="gif-cat" onclick="setGifCat('reactions',this)">😂 REACTIONS</button>
+            <button class="gif-cat" onclick="setGifCat('anime',this)">⚡ ANIME</button>
+            <button class="gif-cat" onclick="setGifCat('memes',this)">💀 MEMES</button>
+            <button class="gif-cat" onclick="setGifCat('gaming',this)">🎮 GAMING</button>
+            <button class="gif-cat" onclick="setGifCat('movies',this)">🎬 MOVIES</button>
+          </div>
+          <div class="gif-grid" id="gifGrid">
+            <div class="gif-loading">LOADING GIFS...</div>
+          </div>
+          <div class="gif-footer">POWERED BY GIPHY</div>
+        </div>
+        <div class="cinput">
+          <div class="nrow">
+            <span class="nlbl">YOU:</span>
+            <input type="text" id="ni" maxlength="14" placeholder="handle" value="GHOST_01" readonly style="opacity:0.7">
+          </div>
+          <div class="srow2">
+            <input type="text" id="mi" placeholder="say something..." maxlength="200" onkeydown="if(event.key==='Enter')send()">
+            <button class="gif-btn" onclick="toggleGifPicker()" title="GIF">🎞️</button>
+            <button id="sb" onclick="send()">SEND</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile chat -->
+<div id="mobScrim" onclick="closeMobChat()"></div>
+<div id="mobDrawer">
+  <div class="mob-handle"></div>
+  <div class="mob-chdr">
+    <span class="mob-ctitle">// CHAT</span>
+    <button class="mob-close" onclick="closeMobChat()">✕ CLOSE</button>
+  </div>
+  <div id="mobMsgs"></div>
+  <div class="mob-reacts">
+    <button class="rb" onclick="react('😂')">😂</button>
+    <button class="rb" onclick="react('🔥')">🔥</button>
+    <button class="rb" onclick="react('😮')">😮</button>
+    <button class="rb" onclick="react('❤️')">❤️</button>
+    <button class="rb" onclick="react('👏')">👏</button>
+    <button class="rb" onclick="react('🎬')">🎬</button>
+    <button class="rb" onclick="react('💀')">💀</button>
+  </div>
+  <div class="mob-input-row">
+    <input type="text" id="mobMi" placeholder="say something..." maxlength="200" onkeydown="if(event.key==='Enter')sendMob()">
+    <button class="mob-send" onclick="sendMob()">SEND</button>
+  </div>
+</div>
+<button id="mobChatBtn" onclick="openMobChat()">💬</button>
+
+<!-- Pause overlay -->
+<div class="pause-ov" id="pauseOv">
+  <div class="po-ttl">⏸ PAUSED BY <span id="pauseBy">---</span></div>
+  <div class="po-tmr" id="pauseTmr">3:00</div>
+  <button class="po-res" onclick="resumePause()">▶ RESUME EARLY</button>
+</div>
+
+<!-- Modals -->
+<div class="rmodal" id="rpModal">
+  <div class="rbox">
+    <div class="rbox-ttl gold">⏸ REQUEST PAUSE</div>
+    <div style="font-family:'VT323',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:8px;letter-spacing:1px">PAUSES LEFT: <span id="pleft">2</span> · MAX 3 MIN EACH</div>
+    <textarea class="sinp" id="pReason" placeholder="Reason (optional)..."></textarea>
+    <div class="rbox-btns">
+      <button class="rbtn2 cancel" onclick="closeModals()">CANCEL</button>
+      <button class="rbtn2 send" onclick="sendPauseReq()">SEND</button>
+    </div>
+  </div>
+</div>
+<div class="rmodal" id="rcModal">
+  <div class="rbox">
+    <div class="rbox-ttl teal">⇄ REQUEST CHANGE</div>
+    <input type="text" class="sinp" id="cWhat" placeholder="What should we watch?" style="width:100%;margin-bottom:6px">
+    <textarea class="sinp" id="cWhy" placeholder="Why? (optional)" style="height:55px"></textarea>
+    <div class="rbox-btns">
+      <button class="rbtn2 cancel" onclick="closeModals()">CANCEL</button>
+      <button class="rbtn2 send" onclick="sendChangeReq()">SEND</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
