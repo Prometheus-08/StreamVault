@@ -296,7 +296,6 @@
       <div class="src-drawer" id="srcDrw">
         <div class="stabs">
           <button class="stab on" onclick="showStab('yt',this)"><span class="si">▶</span>YOUTUBE</button>
-          <button class="stab" onclick="showStab('file',this)"><span class="si">📁</span>UPLOAD</button>
           <button class="stab" onclick="showStab('music',this)"><span class="si">🎵</span>MUSIC</button>
           <button class="stab" onclick="showStab('screen',this)"><span class="si">🖥</span>SCREEN</button>
           <button class="stab" onclick="showStab('lib',this)"><span class="si">🗄</span>LIBRARY</button>
@@ -313,22 +312,31 @@
               <button class="pbtn" onclick="loadYT()">LOAD ▸</button>
             </div>
           </div>
-          <div class="spnl" id="sp-file">
-            <div class="fdrop" id="fd" onclick="document.getElementById('fi').click()">
-              <input type="file" id="fi" accept="video/*" onchange="loadFile(event)">
-              <div>📂 DROP VIDEO FILE OR CLICK TO BROWSE</div>
-              <div style="font-size:0.6rem;margin-top:3px;opacity:0.5">MP4 · MKV · WEBM · MOV</div>
-            </div>
-          </div>
           <div class="spnl" id="sp-music">
-            <div class="srow">
-              <input class="sinp" id="muUrl" type="url" placeholder="YouTube URL (audio) or stream link...">
-              <button class="pbtn" onclick="loadMusicUrl()">PLAY ▸</button>
+            <!-- Music source tabs -->
+            <div class="music-tabs">
+              <button class="mtab active" onclick="showMTab('ytmusic',this)">▶ YT MUSIC</button>
+              <button class="mtab" onclick="showMTab('scmusic',this)">☁ SOUNDCLOUD</button>
             </div>
-            <div class="srow">
-              <input class="sinp" id="muFn" type="text" placeholder="Upload audio file..." readonly style="cursor:pointer" onclick="document.getElementById('ai').click()">
-              <input type="file" id="ai" accept="audio/*" onchange="loadAudio(event)" style="display:none">
-              <button class="pbtn" onclick="document.getElementById('ai').click()">BROWSE</button>
+
+            <!-- YouTube Music -->
+            <div class="mtpnl active" id="mt-ytmusic">
+              <div class="yt-search-bar">
+                <input class="sinp" id="muSearchQ" type="text" placeholder="Search songs, artists..." onkeydown="if(event.key==='Enter')musicSearch()">
+                <button class="pbtn" onclick="musicSearch()">🔍 SEARCH</button>
+              </div>
+              <div class="music-results" id="muResults"></div>
+            </div>
+
+            <!-- SoundCloud -->
+            <div class="mtpnl" id="mt-scmusic">
+              <div class="yt-search-bar">
+                <input class="sinp" id="scSearchQ" type="text" placeholder="Search SoundCloud..." onkeydown="if(event.key==='Enter')scSearch()">
+                <button class="pbtn" onclick="scSearch()">🔍 SEARCH</button>
+              </div>
+              <div class="music-results" id="scResults">
+                <div class="yt-searching" style="margin-top:8px">ENTER SOUNDCLOUD CLIENT ID IN app.js TO ENABLE</div>
+              </div>
             </div>
           </div>
           <div class="spnl" id="sp-screen">
@@ -363,6 +371,26 @@
           </div>
           <div class="yt-overlay-searching" id="ytOverlayStatus">SEARCHING...</div>
           <div class="yt-overlay-grid" id="ytOverlayGrid"></div>
+        </div>
+
+        <!-- Music Search Overlay -->
+        <div class="yt-overlay" id="muOverlay">
+          <div class="yt-overlay-header">
+            <div class="yt-overlay-title">🎵 MUSIC SEARCH</div>
+            <button class="yt-overlay-close" onclick="closeMuOverlay()">✕ CLOSE</button>
+          </div>
+          <div class="yt-overlay-searching" id="muOverlayStatus">SEARCHING...</div>
+          <div class="yt-overlay-grid" id="muOverlayGrid"></div>
+        </div>
+
+        <!-- Now Playing bar -->
+        <div class="now-playing" id="nowPlaying" style="display:none">
+          <img id="npThumb" src="" alt="">
+          <div class="np-info">
+            <div class="np-title" id="npTitle">—</div>
+            <div class="np-channel" id="npChannel">—</div>
+          </div>
+          <div class="np-badge">♪ PLAYING</div>
         </div>
       </div>
 

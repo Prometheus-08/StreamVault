@@ -214,7 +214,6 @@ async function ytSearch(){
   const q = document.getElementById('ytSearchQ').value.trim();
   if(!q) return;
 
-  // Show overlay with loading state
   const overlay = document.getElementById('ytOverlay');
   const status = document.getElementById('ytOverlayStatus');
   const grid = document.getElementById('ytOverlayGrid');
@@ -225,43 +224,46 @@ async function ytSearch(){
   closeDrawer();
 
   try {
-    const r = await fetch(`https://youtube-v31.p.rapidapi.com/search?q=${encodeURIComponent(q)}&part=snippet&type=video&maxResults=20`, {
+    const r = await fetch(`https://youtube-search-and-download.p.rapidapi.com/search?query=${encodeURIComponent(q)}&hl=en&gl=US&type=v`, {
       headers: {
-        'X-RapidAPI-Key': YT_RAPID_KEY,
-        'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com'
+        'x-rapidapi-key': YT_RAPID_KEY,
+        'x-rapidapi-host': 'youtube-search-and-download.p.rapidapi.com'
       }
     });
     if(!r.ok) throw new Error('Search failed');
     const data = await r.json();
     status.classList.remove('show');
-    if(!data.items || !data.items.length){
+    const videos = (data.contents || []).filter(c => c.video && c.video.videoId);
+    if(!videos.length){
       status.textContent = 'NO RESULTS FOUND';
       status.classList.add('show');
       return;
     }
-    renderYTResults(data.items);
+    renderYTResults(videos);
   } catch(e){
     status.textContent = '⚠ SEARCH FAILED — CHECK YOUR CONNECTION';
     status.classList.add('show');
   }
 }
 
-function renderYTResults(videos){
+function renderYTResults(items){
   const grid = document.getElementById('ytOverlayGrid');
   grid.innerHTML = '';
-  videos.forEach(v => {
-    const id = v.id?.videoId; if(!id) return;
-    const snippet = v.snippet || {};
-    const thumb = snippet.thumbnails?.medium?.url || snippet.thumbnails?.default?.url || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-    const title = snippet.title || 'Untitled';
-    const channel = snippet.channelTitle || '';
+  items.forEach(item => {
+    const v = item.video;
+    const id = v.videoId;
+    const thumb = v.thumbnails?.[0]?.url || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+    const title = v.title || 'Untitled';
+    const channel = v.channelName || '';
+    const duration = v.lengthText || '';
+    const views = v.viewCountText || '';
     const card = document.createElement('div');
     card.className = 'yt-card';
     card.innerHTML = `
       <img class="yt-card-thumb" src="${thumb}" onerror="this.src='https://i.ytimg.com/vi/${id}/mqdefault.jpg'" alt="" loading="lazy">
       <div class="yt-card-info">
         <div class="yt-card-title">${esc(title)}</div>
-        <div class="yt-card-channel">📺 ${esc(channel)}</div>
+        <div class="yt-card-channel">📺 ${esc(channel)}${duration ? ' · ' + duration : ''}${views ? ' · ' + views : ''}</div>
       </div>
     `;
     card.onclick = () => loadYTById(id, title);
@@ -297,22 +299,140 @@ function loadObj(f){
   mode='file'; vid.play().then(()=>{playing=true;setPb(true);}).catch(()=>{});
   bindVid(); sys(`📁 LOADED: ${f.name}`); closeDrawer();
 }
-function loadMusicUrl(){
-  const url=document.getElementById('muUrl').value.trim(); if(!url) return;
-  const m=url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-  if(m){
-    hide(); ytf.style.display='block';
-    ytf.src=`https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0`;
-    mode='yt'; playing=true; setPb(true); sys('🎵 YOUTUBE AUDIO LOADED'); closeDrawer(); return;
-  }
-  hide(); vid.style.display='block'; vid.src=url;
-  vid.volume=parseFloat(document.getElementById('vs').value);
-  mode='file'; vid.play().then(()=>{playing=true;setPb(true);}).catch(()=>{});
-  bindVid(); sys('🎵 AUDIO STREAM STARTED'); closeDrawer();
+// ══ MUSIC TAB ════════════════════════════════════
+const SC_CLIENT_ID = 'YOUR_SOUNDCLOUD_CLIENT_ID'; // paste yours here
+
+function showMTab(id, btn){
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mtpnl').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mt-'+id).classList.add('active');
 }
+
+function closeMuOverlay(){ document.getElementById('muOverlay').classList.remove('open'); }
+
+async function musicSearch(){
+  const q = document.getElementById('muSearchQ').value.trim(); if(!q) return;
+  const overlay = document.getElementById('muOverlay');
+  const status = document.getElementById('muOverlayStatus');
+  const grid = document.getElementById('muOverlayGrid');
+  overlay.classList.add('open');
+  status.classList.add('show');
+  status.textContent = '🎵 SEARCHING "' + q.toUpperCase() + '"...';
+  grid.innerHTML = '';
+  closeDrawer();
+  try {
+    const r = await fetch(`https://youtube-search-and-download.p.rapidapi.com/search?query=${encodeURIComponent(q + ' music')}&hl=en&gl=US&type=v`, {
+      headers: { 'x-rapidapi-key': YT_RAPID_KEY, 'x-rapidapi-host': 'youtube-search-and-download.p.rapidapi.com' }
+    });
+    if(!r.ok) throw new Error();
+    const data = await r.json();
+    status.classList.remove('show');
+    const items = (data.contents || []).filter(c => c && c.video && c.video.videoId);
+    if(!items.length){ status.textContent='NO RESULTS'; status.classList.add('show'); return; }
+    renderMusicResults(items);
+  } catch(e){
+    status.textContent = '⚠ SEARCH FAILED';
+    status.classList.add('show');
+  }
+}
+
+function renderMusicResults(items){
+  const grid = document.getElementById('muOverlayGrid');
+  grid.innerHTML = '';
+  items.forEach(item => {
+    const v = item.video; if(!v || !v.videoId) return;
+    const id = v.videoId;
+    const thumb = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+    const title = v.title || 'Untitled';
+    const channel = v.channelName || '';
+    const duration = v.lengthText || '';
+    const card = document.createElement('div');
+    card.className = 'music-item';
+    card.innerHTML = `
+      <img class="music-thumb" src="${thumb}" alt="">
+      <div class="music-info">
+        <div class="music-title">${esc(title)}</div>
+        <div class="music-artist">🎵 ${esc(channel)}</div>
+      </div>
+      <div class="music-dur">${esc(duration)}</div>
+    `;
+    card.onclick = () => playMusicById(id, title, channel, thumb);
+    grid.appendChild(card);
+  });
+}
+
+function playMusicById(id, title, channel, thumb){
+  closeMuOverlay();
+  // Show thumbnail overlay, hide video
+  hide();
+  const np = document.getElementById('nowPlaying');
+  np.style.display = 'flex';
+  document.getElementById('npThumb').src = thumb || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+  document.getElementById('npTitle').textContent = title;
+  document.getElementById('npChannel').textContent = channel;
+  // Load YT embed with no video (just audio via iframe)
+  ytf.style.display = 'block';
+  ytf.style.opacity = '0';
+  ytf.style.pointerEvents = 'none';
+  ytf.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+  mode = 'yt'; playing = true; setPb(true);
+  sys(`🎵 NOW PLAYING: ${title}`);
+  document.getElementById('muSearchQ').value = '';
+}
+
+async function scSearch(){
+  const q = document.getElementById('scSearchQ').value.trim(); if(!q) return;
+  const res = document.getElementById('scResults');
+  if(SC_CLIENT_ID === 'YOUR_SOUNDCLOUD_CLIENT_ID'){
+    res.innerHTML = '<div style="font-family:VT323,monospace;font-size:0.7rem;color:var(--gold);padding:10px">⚠ ADD YOUR SOUNDCLOUD CLIENT ID IN app.js</div>';
+    return;
+  }
+  res.innerHTML = '<div style="font-family:VT323,monospace;font-size:0.7rem;color:var(--muted);padding:10px">SEARCHING...</div>';
+  try {
+    const r = await fetch(`https://api.soundcloud.com/tracks?q=${encodeURIComponent(q)}&client_id=${SC_CLIENT_ID}&limit=15&linked_partitioning=1`);
+    const data = await r.json();
+    if(!data.collection?.length){ res.innerHTML='<div style="font-family:VT323,monospace;font-size:0.7rem;color:var(--muted);padding:10px">NO RESULTS</div>'; return; }
+    res.innerHTML = '';
+    data.collection.forEach(track => {
+      const item = document.createElement('div');
+      item.className = 'music-item';
+      const thumb = track.artwork_url || 'https://i.scdn.co/image/placeholder';
+      const dur = track.duration ? Math.floor(track.duration/60000)+':'+String(Math.floor((track.duration%60000)/1000)).padStart(2,'0') : '';
+      item.innerHTML = `
+        <img class="music-thumb" src="${thumb}" alt="" onerror="this.style.opacity='0.3'">
+        <div class="music-info">
+          <div class="music-title">${esc(track.title)}</div>
+          <div class="music-artist">☁ ${esc(track.user?.username||'')}</div>
+        </div>
+        <div class="music-dur">${dur}</div>
+      `;
+      item.onclick = () => playScTrack(track);
+      res.appendChild(item);
+    });
+  } catch(e){
+    res.innerHTML = '<div style="font-family:VT323,monospace;font-size:0.7rem;color:var(--muted);padding:10px">⚠ SOUNDCLOUD ERROR</div>';
+  }
+}
+
+function playScTrack(track){
+  if(!track.stream_url) return sys('⚠ TRACK NOT STREAMABLE');
+  const streamUrl = `${track.stream_url}?client_id=${SC_CLIENT_ID}`;
+  hide();
+  const np = document.getElementById('nowPlaying');
+  np.style.display = 'flex';
+  document.getElementById('npThumb').src = track.artwork_url || '';
+  document.getElementById('npTitle').textContent = track.title;
+  document.getElementById('npChannel').textContent = '☁ ' + (track.user?.username||'SoundCloud');
+  vid.style.display = 'block';
+  vid.src = streamUrl;
+  vid.volume = parseFloat(document.getElementById('vs').value);
+  mode = 'file'; vid.play().then(()=>{playing=true;setPb(true);}).catch(()=>{});
+  bindVid(); sys(`🎵 SC: ${track.title}`); closeDrawer();
+}
+
 function loadAudio(e){
   const f=e.target.files[0]; if(!f) return;
-  document.getElementById('muFn').value=f.name;
   hide(); vid.style.display='block'; vid.src=URL.createObjectURL(f);
   vid.volume=parseFloat(document.getElementById('vs').value);
   mode='file'; vid.play().then(()=>{playing=true;setPb(true);}).catch(()=>{});
