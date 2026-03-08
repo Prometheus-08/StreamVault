@@ -313,31 +313,12 @@
             </div>
           </div>
           <div class="spnl" id="sp-music">
-            <!-- Music source tabs -->
-            <div class="music-tabs">
-              <button class="mtab active" onclick="showMTab('ytmusic',this)">▶ YT MUSIC</button>
-              <button class="mtab" onclick="showMTab('scmusic',this)">☁ SOUNDCLOUD</button>
-            </div>
-
             <!-- YouTube Music -->
-            <div class="mtpnl active" id="mt-ytmusic">
-              <div class="yt-search-bar">
-                <input class="sinp" id="muSearchQ" type="text" placeholder="Search songs, artists..." onkeydown="if(event.key==='Enter')musicSearch()">
-                <button class="pbtn" onclick="musicSearch()">🔍 SEARCH</button>
-              </div>
-              <div class="music-results" id="muResults"></div>
+            <div class="yt-search-bar">
+              <input class="sinp" id="muSearchQ" type="text" placeholder="Search songs, artists..." onkeydown="if(event.key==='Enter')musicSearch()">
+              <button class="pbtn" onclick="musicSearch()">🔍 SEARCH</button>
             </div>
-
-            <!-- SoundCloud -->
-            <div class="mtpnl" id="mt-scmusic">
-              <div class="yt-search-bar">
-                <input class="sinp" id="scSearchQ" type="text" placeholder="Search SoundCloud..." onkeydown="if(event.key==='Enter')scSearch()">
-                <button class="pbtn" onclick="scSearch()">🔍 SEARCH</button>
-              </div>
-              <div class="music-results" id="scResults">
-                <div class="yt-searching" style="margin-top:8px">ENTER SOUNDCLOUD CLIENT ID IN app.js TO ENABLE</div>
-              </div>
-            </div>
+            <div class="music-results" id="muResults"></div>
           </div>
           <div class="spnl" id="sp-screen">
             <div class="srow">
@@ -371,6 +352,9 @@
           </div>
           <div class="yt-overlay-searching" id="ytOverlayStatus">SEARCHING...</div>
           <div class="yt-overlay-grid" id="ytOverlayGrid"></div>
+          <div class="load-more-wrap" id="ytLoadMoreWrap" style="display:none">
+            <button class="load-more-btn" onclick="ytLoadMore()">⬇ LOAD MORE</button>
+          </div>
         </div>
 
         <!-- Music Search Overlay -->
@@ -381,6 +365,9 @@
           </div>
           <div class="yt-overlay-searching" id="muOverlayStatus">SEARCHING...</div>
           <div class="yt-overlay-grid" id="muOverlayGrid"></div>
+          <div class="load-more-wrap" id="muLoadMoreWrap" style="display:none">
+            <button class="load-more-btn" onclick="muLoadMore()">⬇ LOAD MORE</button>
+          </div>
         </div>
 
         <!-- Now Playing bar -->
