@@ -303,11 +303,15 @@
         </div>
         <div class="spnls">
           <div class="spnl on" id="sp-yt">
+            <div class="yt-search-bar">
+              <input class="sinp" id="ytSearchQ" type="text" placeholder="Search YouTube..." onkeydown="if(event.key==='Enter')ytSearch()">
+              <button class="pbtn" onclick="ytSearch()">🔍 SEARCH</button>
+            </div>
+            <div class="yt-or">— OR PASTE URL DIRECTLY —</div>
             <div class="srow">
-              <input class="sinp" id="ytUrl" type="url" placeholder="Paste YouTube video URL...">
+              <input class="sinp" id="ytUrl" type="url" placeholder="https://youtube.com/watch?v=...">
               <button class="pbtn" onclick="loadYT()">LOAD ▸</button>
             </div>
-            <div class="fnote">⚠ YouTube may restrict embedding.</div>
           </div>
           <div class="spnl" id="sp-file">
             <div class="fdrop" id="fd" onclick="document.getElementById('fi').click()">
@@ -350,6 +354,16 @@
         </div>
         <video id="mainVid" style="display:none"></video>
         <iframe id="ytFrame" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+        <!-- YouTube Search Overlay -->
+        <div class="yt-overlay" id="ytOverlay">
+          <div class="yt-overlay-header">
+            <div class="yt-overlay-title">🔍 YOUTUBE SEARCH</div>
+            <button class="yt-overlay-close" onclick="closeYTOverlay()">✕ CLOSE</button>
+          </div>
+          <div class="yt-overlay-searching" id="ytOverlayStatus">SEARCHING...</div>
+          <div class="yt-overlay-grid" id="ytOverlayGrid"></div>
+        </div>
       </div>
 
       <!-- Playback controls -->
@@ -406,7 +420,7 @@
           </div>
           <div class="srow2">
             <input type="text" id="mi" placeholder="say something..." maxlength="200" onkeydown="if(event.key==='Enter')send()">
-            <button class="gif-btn" onclick="toggleGifPicker()" title="GIF">🎞️</button>
+            <button class="gif-btn" onclick="toggleGifPicker()">GIF</button>
             <button id="sb" onclick="send()">SEND</button>
           </div>
         </div>

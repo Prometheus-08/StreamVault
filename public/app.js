@@ -203,15 +203,87 @@ const vid=document.getElementById('mainVid');
 const ytf=document.getElementById('ytFrame');
 const vph=document.getElementById('vph');
 
+// ══ YOUTUBE SEARCH ═══════════════════════════════
+const YT_RAPID_KEY = 'cd43d8f25amsh6677968a81fc078p11893bjsn8f5528c141b4';
+
+function closeYTOverlay(){
+  document.getElementById('ytOverlay').classList.remove('open');
+}
+
+async function ytSearch(){
+  const q = document.getElementById('ytSearchQ').value.trim();
+  if(!q) return;
+
+  // Show overlay with loading state
+  const overlay = document.getElementById('ytOverlay');
+  const status = document.getElementById('ytOverlayStatus');
+  const grid = document.getElementById('ytOverlayGrid');
+  overlay.classList.add('open');
+  status.classList.add('show');
+  status.textContent = '🔍 SEARCHING FOR "' + q.toUpperCase() + '"...';
+  grid.innerHTML = '';
+  closeDrawer();
+
+  try {
+    const r = await fetch(`https://youtube-v31.p.rapidapi.com/search?q=${encodeURIComponent(q)}&part=snippet&type=video&maxResults=20`, {
+      headers: {
+        'X-RapidAPI-Key': YT_RAPID_KEY,
+        'X-RapidAPI-Host': 'youtube-v31.p.rapidapi.com'
+      }
+    });
+    if(!r.ok) throw new Error('Search failed');
+    const data = await r.json();
+    status.classList.remove('show');
+    if(!data.items || !data.items.length){
+      status.textContent = 'NO RESULTS FOUND';
+      status.classList.add('show');
+      return;
+    }
+    renderYTResults(data.items);
+  } catch(e){
+    status.textContent = '⚠ SEARCH FAILED — CHECK YOUR CONNECTION';
+    status.classList.add('show');
+  }
+}
+
+function renderYTResults(videos){
+  const grid = document.getElementById('ytOverlayGrid');
+  grid.innerHTML = '';
+  videos.forEach(v => {
+    const id = v.id?.videoId; if(!id) return;
+    const snippet = v.snippet || {};
+    const thumb = snippet.thumbnails?.medium?.url || snippet.thumbnails?.default?.url || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+    const title = snippet.title || 'Untitled';
+    const channel = snippet.channelTitle || '';
+    const card = document.createElement('div');
+    card.className = 'yt-card';
+    card.innerHTML = `
+      <img class="yt-card-thumb" src="${thumb}" onerror="this.src='https://i.ytimg.com/vi/${id}/mqdefault.jpg'" alt="" loading="lazy">
+      <div class="yt-card-info">
+        <div class="yt-card-title">${esc(title)}</div>
+        <div class="yt-card-channel">📺 ${esc(channel)}</div>
+      </div>
+    `;
+    card.onclick = () => loadYTById(id, title);
+    grid.appendChild(card);
+  });
+}
+
+function loadYTById(id, title){
+  closeYTOverlay();
+  hide(); ytf.style.display='block';
+  ytf.src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+  mode='yt'; playing=true; setPb(true);
+  sys(`▶ PLAYING: ${title||id}`);
+  document.getElementById('ytSearchQ').value='';
+}
+
 function loadYT(){
   const raw=document.getElementById('ytUrl').value.trim(); if(!raw) return;
   const m=raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
   let id = m ? m[1] : (/^[a-zA-Z0-9_-]{11}$/.test(raw) ? raw : null);
   if(!id){ sys('⚠ INVALID YOUTUBE URL'); return; }
-  hide(); ytf.style.display='block';
-  ytf.src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-  mode='yt'; playing=true; setPb(true);
-  sys(`▶ YOUTUBE LOADED`); closeDrawer();
+  loadYTById(id, '');
 }
 
 const fd=document.getElementById('fd');
