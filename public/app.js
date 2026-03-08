@@ -340,13 +340,7 @@ async function fetchMusic(q, next, grid, status, wrapId, append=false){
 
 function playMusicById(id, title, channel, thumb){
   closeMuOverlay();
-  // Stop any existing playback cleanly
-  vid.pause(); vid.src='';
-  ytf.src=''; ytf.style.display='none';
-  ytf.style.opacity=''; ytf.style.pointerEvents='';
-  vph.style.display='none';
-
-  // Show music player screen
+  hide();
   const np = document.getElementById('nowPlaying');
   if(np){
     np.style.display = 'flex';
@@ -354,14 +348,8 @@ function playMusicById(id, title, channel, thumb){
     document.getElementById('npTitle').textContent = title;
     document.getElementById('npChannel').textContent = channel;
   }
-
-  // Show iframe but visually replaced by now-playing bar
   ytf.style.display = 'block';
-  ytf.style.opacity = '0';
-  ytf.style.position = 'absolute';
-  ytf.style.pointerEvents = 'none';
-  ytf.style.width = '1px';
-  ytf.style.height = '1px';
+  ytf.style.opacity = '0.01';
   ytf.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
   mode = 'music'; playing = true; setPb(true);
   sys(`🎵 NOW PLAYING: ${title}`);
@@ -400,8 +388,10 @@ function hide(){
   ytf.style.display='none';
   ytf.style.opacity='';
   ytf.style.pointerEvents='';
+  ytf.style.position='';
+  ytf.style.width='';
+  ytf.style.height='';
   ytf.src='';
-  // hide now playing bar and reset music mode
   const np = document.getElementById('nowPlaying');
   if(np) np.style.display='none';
   if(mode==='music') mode=null;
