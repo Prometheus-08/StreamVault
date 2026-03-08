@@ -300,7 +300,7 @@ function loadObj(f){
   bindVid(); sys(`📁 LOADED: ${f.name}`); closeDrawer();
 }
 // ══ MUSIC TAB ════════════════════════════════════
-const SC_CLIENT_ID = 'YOUR_SOUNDCLOUD_CLIENT_ID'; // paste yours here
+const SC_CLIENT_ID = 'vggtWercggmHoFQ6C0ls66nm3ToDhFrl'; // paste yours here
 
 function showMTab(id, btn){
   document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
